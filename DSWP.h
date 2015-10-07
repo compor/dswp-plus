@@ -1,21 +1,36 @@
 #ifndef DSWP_H_
 #define DSWP_H_
 
-#include "llvm/Pass.h"
-#include "llvm/Analysis/LoopPass.h"
+#include "llvm/Config/llvm-config.h"
+
+#if LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR < 7
 #include "llvm/Function.h"
 #include "llvm/Module.h"
 #include "llvm/Instructions.h"
 #include "llvm/Value.h"
-#include "llvm/Analysis/AliasAnalysis.h"
 #include "llvm/Analysis/Dominators.h"
-#include "llvm/Analysis/PostDominators.h"
-#include "llvm/Analysis/LoopInfo.h"
 #include "llvm/Support/InstIterator.h"
-#include "llvm/Analysis/MemoryDependenceAnalysis.h"
 #include "llvm/IRBuilder.h"
 #include "llvm/LLVMContext.h"
 #include "llvm/DerivedTypes.h"
+#else
+#include "llvm/IR/Function.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/Value.h"
+#include "llvm/IR/Dominators.h"
+#include "llvm/IR/InstIterator.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/DerivedTypes.h"
+#endif
+
+#include "llvm/Pass.h"
+#include "llvm/Analysis/LoopPass.h"
+#include "llvm/Analysis/AliasAnalysis.h"
+#include "llvm/Analysis/PostDominators.h"
+#include "llvm/Analysis/LoopInfo.h"
+#include "llvm/Analysis/MemoryDependenceAnalysis.h"
 #include "llvm/Support/raw_os_ostream.h"
 
 #include "Utils.h"
@@ -49,7 +64,7 @@ struct Edge {
 	Edge(Instruction *u, Instruction *v, DType dtype);
 
 	bool operator== (const Edge& rhs) const {
-		return (this->u == rhs.u && this->v == rhs.v 
+		return (this->u == rhs.u && this->v == rhs.v
 				&& this->dtype == rhs.dtype);
 	}
 };

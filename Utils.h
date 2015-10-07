@@ -1,14 +1,19 @@
 #ifndef UTIL_H_
 #define UTIL_H_
 
+#include "llvm/Config/llvm-config.h"
 
+#if LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR < 7
 #include "llvm/Instructions.h"
+#else
+#include "llvm/IR/Instructions.h"
+#endif
+
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <string>
 
-#include "Utils.h"
 
 using namespace llvm;
 using namespace std;
