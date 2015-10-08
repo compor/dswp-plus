@@ -103,8 +103,8 @@ bool DSWP::doInitialization(Loop *L, LPPassManager &LPM) {
 }
 
 void DSWP::getAnalysisUsage(AnalysisUsage &AU) const {
-    AU.addRequired<LoopInfo>();
-    AU.addRequired<DominatorTree>();
+    AU.addRequired<LoopInfoWrapperPass>();
+    AU.addRequired<DominatorTreeWrapperPass>();
     AU.addRequired<PostDominatorTree>();
     AU.addRequired<AliasAnalysis>();
     AU.addRequired<MemoryDependenceAnalysis>();
