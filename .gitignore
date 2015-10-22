@@ -9,6 +9,7 @@
 *.bc.ll.pdf
 *.out
 
+tags
 dag
 partition
 showgraph
