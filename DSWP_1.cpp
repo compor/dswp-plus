@@ -178,16 +178,16 @@ void DSWP::buildPDG(Loop *L) {
 						cout << "]]" << endl;
 					}
 				} else {
-					AliasAnalysis::Location MemLoc;
+					AliasAnalysis::ModRefResult MemLoc;
 					bool is_load;
 					if (LoadInst *i = dyn_cast<LoadInst>(inst)) {
-						MemLoc = aa.getLocation(i);
+						MemLoc = aa.getModRefInfo(i);
 						is_load = true;
 					} else if (StoreInst *i = dyn_cast<StoreInst>(inst)) {
-						MemLoc = aa.getLocation(i);
+						MemLoc = aa.getModRefInfo(i);
 						is_load = false;
 					} else if (VAArgInst *i = dyn_cast<VAArgInst>(inst)) {
-						MemLoc = aa.getLocation(i);
+						MemLoc = aa.getModRefInfo(i);
 						is_load = true;
 					} else {
 						// also does AtomicCmpXchInst, AtomicRMWInst
@@ -198,8 +198,7 @@ void DSWP::buildPDG(Loop *L) {
 
 					typedef SmallVector<NonLocalDepResult, 6> res_t;
 					res_t res;
-					mda.getNonLocalPointerDependency(
-						MemLoc, is_load, inst->getParent(), res);
+					mda.getNonLocalPointerDependency(inst, res);
 
 					for (res_t::iterator ri = res.begin(), re = res.end();
 							ri != re; ++ri) {
