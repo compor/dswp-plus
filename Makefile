@@ -1,12 +1,35 @@
+# 
 # DSWP makefile
+# 
 
 # variables
-OUT_DIR=./libs/
-PASS_LIB=libdswp.so
+
+OUT_DIR = ./libs/
+PASS_LIB = libdswp.so
+
+PASS_OBJS = DSWP_0.o DSWP_1.o DSWP_2.o DSWP_3.o DSWP_4.o DSWP_5.o DSWP_DEBUG.o \
+	        Utils.o
+RUNTIME_OBJS = runtime/queue.o runtime/simple_sync.o runtime/runtime_debug.o
+RT_TEST_OBJS = runtime/tests/sync_test.o runtime/tests/test.o
+-include $(PASS_OBJS:%.o=%.d) $(RUNTIME_OBJS:%.o=%.d) $(RT_TEST_OBJS:%.o=%.d)
 
 # compiler flags
+
+INCFLAGS = -I$(shell llvm-config --includedir)
+
+CPPFLAGS += $(shell llvm-config --cppflags)
+
 CFLAGS += -MMD
-CXXFLAGS = -rdynamic $(shell llvm-config --cxxflags) -g -O0
+
+CXXFLAGS += -std=c++11
+CXXFLAGS += -g -O0
+CXXFLAGS += -fPIC -fno-exceptions -fno-rtti
+CXXFLAGS += -pedantic -Wall
+CXXFLAGS += $(INCFLAGS)
+
+LDFLAGS += $(shell llvm-config --ldflags)
+
+LDFLAGS_LIB = $(shell llvm-config core support --libs)
 
 # targets
 
@@ -14,18 +37,9 @@ CXXFLAGS = -rdynamic $(shell llvm-config --cxxflags) -g -O0
 
 all: $(PASS_LIB) runtime/libruntime.a
 
-PASS_OBJS = DSWP_0.o DSWP_1.o DSWP_2.o DSWP_3.o DSWP_4.o DSWP_5.o DSWP_DEBUG.o \
-	        Utils.o raw_os_ostream.o
-RUNTIME_OBJS = runtime/queue.o runtime/simple_sync.o runtime/runtime_debug.o
-RT_TEST_OBJS = runtime/tests/sync_test.o runtime/tests/test.o
--include $(PASS_OBJS:%.o=%.d) $(RUNTIME_OBJS:%.o=%.d) $(RT_TEST_OBJS:%.o=%.d)
-
-
 # the pass library
 $(PASS_LIB): $(PASS_OBJS)
-	$(CXX) -dylib -flat_namespace -shared -g -O0 $^ -o $@
-# We're including raw_os_ostream.o because we can't just link in libLLVMSupport:
-# http://lists.cs.uiuc.edu/pipermail/llvmdev/2010-June/032508.html
+	$(CXX) -shared -g -O0 $(LDFLAGS_LIB) $^ -o $@
 
 # the runtime library
 runtime/libruntime.a: $(RUNTIME_OBJS)
