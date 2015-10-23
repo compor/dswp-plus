@@ -418,7 +418,7 @@ void DSWP::loopSplit(Loop *L) {
 			gep_args.push_back(ConstantInt::get(Type::getInt64Ty(*context), 0));
 			gep_args.push_back(ConstantInt::get(Type::getInt32Ty(*context), j));
 			GetElementPtrInst* ele_addr = GetElementPtrInst::Create(
-				castArgs, gep_args, livein[j]->getName() + "_arg", newToHeader);
+				castArgs->getType(), castArgs, gep_args, livein[j]->getName() + "_arg", newToHeader);
 
 			// load it
 			LoadInst *ele_val = new LoadInst(ele_addr);
@@ -487,7 +487,8 @@ void DSWP::getDominators(Loop *L) {
 	// TODO: if we're running DSWP on more than one loop in a single function,
 	//       this will be invalidated the second time through and segfault when
 	//       getNode(BB) returns null for loop-replace.
-	DominatorTree &dom_tree = getAnalysis<DominatorTree>();
+	auto &dom_tree_wrapper_pass = getAnalysis<DominatorTreeWrapperPass>(*func);
+	auto &dom_tree = dom_tree_wrapper_pass.getDomTree();
 	PostDominatorTree &postdom_tree = getAnalysis<PostDominatorTree>();
 
 	for (Function::iterator bi = func->begin(); bi != func->end(); bi++) {
@@ -526,7 +527,7 @@ void DSWP::getLiveinfo(Loop *L) {
 			for (Instruction::use_iterator ui = inst->use_begin(),
 										   ue = inst->use_end();
 					ui != ue; ++ui) {
-				User *use = *ui;
+				Use *use = &(*ui);
 				if (Instruction *use_i = dyn_cast<Instruction>(use)) {
 					if (!already_liveouted && !L->contains(use_i)) {
 						liveout.push_back(inst);
