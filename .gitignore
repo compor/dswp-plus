@@ -9,6 +9,7 @@
 *.bc.ll.pdf
 *.out
 
+build
 tags
 dag
 partition
