@@ -255,7 +255,7 @@ void DSWP::buildPDG(Loop *L) {
 
 	/*
 	Function *ctrlfunc = Function::Create(functype, Function::ExternalLinkage,
-										  "dummyloopunroll", module);
+										  "dummyloopunroll", m_module);
 	*/
 
 	Function &ctrlfuncref = *ctrlfunc;

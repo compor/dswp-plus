@@ -3,12 +3,12 @@
 using namespace llvm;
 using namespace std;
 
-void DSWP::showGraph(Loop *L) {
+void DSWP::showGraph(const Loop * const L) {
 	cout << "header:" << L->getHeader()->getName().str() << endl;
 	cout << "exit:" << L->getExitBlock()->getName().str() << endl;	//TODO check different functions related to exit
 	cout << "num of blocks:" << L->getBlocks().size() << endl;
 
-	std::string name = "showgraph";
+	const std::string &name = m_module->getName().str() + "-showgraph.txt";
 	ofstream file((name.c_str()));
 	raw_os_ostream ost(file);
 
@@ -29,7 +29,7 @@ void DSWP::showGraph(Loop *L) {
 }
 
 void DSWP::showDAG(Loop *L) {
-	std::string name = "dag";
+	const std::string &name = m_module->getName().str() + "-dag.txt";
 	ofstream file((name.c_str()));
 	raw_os_ostream ost(file);
 
@@ -56,7 +56,7 @@ void DSWP::showDAG(Loop *L) {
 }
 
 void DSWP::showPartition(Loop *L) {
-	std::string name = "partition";
+	const std::string &name = m_module->getName().str() + "-partition.txt";
 	ofstream file((name.c_str()));
 	raw_os_ostream ost(file);
 

@@ -43,7 +43,7 @@ void DSWP::insertSynchronization(Loop *L) {
 
 void DSWP::insertProduce(Instruction *u, Instruction *v, DType dtype,
 					     int channel, int uthread, int vthread) {
-	Function *fun = module->getFunction("sync_produce");
+	Function *fun = m_module->getFunction("sync_produce");
 	vector<Value *> args;
 	Instruction *insPos = u->getNextNode();
 
@@ -113,7 +113,7 @@ void DSWP::insertConsume(Instruction *u, Instruction *v, DType dtype,
 	}
 
 	// call sync_consume(channel)
-	Function *fun = module->getFunction("sync_consume");
+	Function *fun = m_module->getFunction("sync_consume");
 	vector<Value *> args;
 	args.push_back(ConstantInt::get(Type::getInt32Ty(*context), channel));
 	CallInst *call = CallInst::Create(fun, args, "c" + itoa(channel), insPos);
@@ -293,7 +293,7 @@ void DSWP::cleanup(Loop *L, LPPassManager &LPM) {
 }
 
 void DSWP::clear() {
-	module = NULL;
+	m_module = NULL;
 	func = NULL;
 	header = NULL;
 	predecessor = NULL;

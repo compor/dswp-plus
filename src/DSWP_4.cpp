@@ -68,7 +68,7 @@ void DSWP::preLoopSplit(Loop *L) {
 
 	// add the actual functions for each thread
 	for (int i = 0; i < MAX_THREAD; i++) {
-		Constant *c = module->getOrInsertFunction(
+		Constant *c = m_module->getOrInsertFunction(
 				itoa(loopCounter) + "_subloop_" + itoa(i), fType);
 		if (c == NULL) {  // NOTE: don't think this is possible...?
 			error("no function!");
@@ -121,14 +121,14 @@ void DSWP::preLoopSplit(Loop *L) {
 	/*
 	 * initialize the communication queues
 	 */
-	Function *init = module->getFunction("sync_init");
+	Function *init = m_module->getFunction("sync_init");
 	CallInst *callInit = CallInst::Create(init, "", brInst);
 
 
 	/*
 	 * call the worker functions
 	 */
-	Function *delegate = module->getFunction("sync_delegate");
+	Function *delegate = m_module->getFunction("sync_delegate");
 	CastInst *argStruct_voidPtr = CastInst::CreatePointerCast(
 		argStruct, int8_ptr_t,
 		"argstruct_" + itoa(loopCounter) + "_cast", brInst);
@@ -145,7 +145,7 @@ void DSWP::preLoopSplit(Loop *L) {
 	/*
 	 * join them back
 	 */
-	Function *join = module->getFunction("sync_join");
+	Function *join = m_module->getFunction("sync_join");
 	CallInst *callJoin = CallInst::Create(join, "", brInst);
 
 	/*
@@ -402,7 +402,7 @@ void DSWP::loopSplit(Loop *L) {
 		}
 		Argument *args = arglist.begin(); //the function only have one argmument
 
-		Function *showPlace = module->getFunction("showPlace");
+		Function *showPlace = m_module->getFunction("showPlace");
 		CallInst *inHeader = CallInst::Create(showPlace);
 		inHeader->insertBefore(newToHeader);
 
@@ -430,7 +430,7 @@ void DSWP::loopSplit(Loop *L) {
 			// debug: show the value
 			vector<Value *> showArg;
 			showArg.push_back(ele_val);
-			Function *show = module->getFunction("showValue");
+			Function *show = m_module->getFunction("showValue");
 			CallInst *callShow = CallInst::Create(show, showArg);
 			callShow->insertBefore(newToHeader);
 			*/

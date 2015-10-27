@@ -29,6 +29,8 @@ DSWP::DSWP() : LoopPass (ID){
 bool DSWP::doInitialization(Loop *L, LPPassManager &LPM) {
 	Module *mod = L->getHeader()->getParent()->getParent();
 
+    cout << "#### processing module: " << mod->getName().data() << endl;
+
 	Function *produce = mod->getFunction("sync_produce");
 	if (produce == NULL) {	//the first time, we need to link them
 
@@ -116,8 +118,8 @@ bool DSWP::initialize(Loop *L) {
 	// it's not necessarily called immediately before runOnLoop....
 	header = L->getHeader();
 	func = header->getParent();
-	module = func->getParent();
-	context = &module->getContext();
+	m_module = func->getParent();
+	context = &m_module->getContext();
 	eleType = Type::getInt64Ty(*context);
 
 	predecessor = L->getLoopPredecessor();
@@ -171,6 +173,7 @@ bool DSWP::runOnLoop(Loop *L, LPPassManager &LPM) {
 	preLoopSplit(L);
 	loopSplit(L);
 	insertSynchronization(L);
+	cout << "#######################################" << endl;
 	cleanup(L, LPM);
 	clear();
 	cout << "//////////////////////////// we finsih run on a loop " << endl;

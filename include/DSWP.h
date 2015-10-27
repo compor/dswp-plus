@@ -80,7 +80,7 @@ class DSWP: public LoopPass {
 
 private:
 	//neccesary information
-	Module *module;
+	Module *m_module;
 	Function *func;
 	BasicBlock *header;
 	BasicBlock *predecessor;
@@ -209,7 +209,7 @@ private:
 	void clear();
 
 	//test function
-	void showGraph(Loop *L);
+	void showGraph(const Loop * const L);
 
 	//show DAC information
 	void showDAG(Loop *L);
