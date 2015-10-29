@@ -487,7 +487,7 @@ void DSWP::getDominators(Loop *L) {
 	// TODO: if we're running DSWP on more than one loop in a single function,
 	//       this will be invalidated the second time through and segfault when
 	//       getNode(BB) returns null for loop-replace.
-	auto &dom_tree_wrapper_pass = getAnalysis<DominatorTreeWrapperPass>(*m_func);
+	auto &dom_tree_wrapper_pass = getAnalysis<DominatorTreeWrapperPass>();
 	auto &dom_tree = dom_tree_wrapper_pass.getDomTree();
 	PostDominatorTree &postdom_tree = getAnalysis<PostDominatorTree>();
 
