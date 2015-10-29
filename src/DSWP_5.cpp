@@ -294,7 +294,7 @@ void DSWP::cleanup(Loop *L, LPPassManager &LPM) {
 
 void DSWP::clear() {
 	m_module = NULL;
-	func = NULL;
+	m_func = NULL;
 	header = NULL;
 	predecessor = NULL;
 	exit = NULL;

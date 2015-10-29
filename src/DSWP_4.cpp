@@ -14,7 +14,7 @@ void DSWP::preLoopSplit(Loop *L) {
 	/*
 	 * Insert a new block to replace the old loop
 	 */
-	replaceBlock = BasicBlock::Create(*context, "loop-replace", func);
+	replaceBlock = BasicBlock::Create(*context, "loop-replace", m_func);
 	BranchInst *brInst = BranchInst::Create(exit, replaceBlock);
 	replaceBlock->moveBefore(exit);
 
@@ -177,7 +177,7 @@ void DSWP::preLoopSplit(Loop *L) {
 		}
 
 		// replace any uses *outside of the loop* with this load instruction
-		for (Function::iterator bi = func->begin(), be = func->end();
+		for (Function::iterator bi = m_func->begin(), be = m_func->end();
 				bi != be; ++bi) {
 			BasicBlock &bb = *bi;
 			if (!L->contains(&bb)) {
@@ -487,11 +487,11 @@ void DSWP::getDominators(Loop *L) {
 	// TODO: if we're running DSWP on more than one loop in a single function,
 	//       this will be invalidated the second time through and segfault when
 	//       getNode(BB) returns null for loop-replace.
-	auto &dom_tree_wrapper_pass = getAnalysis<DominatorTreeWrapperPass>(*func);
+	auto &dom_tree_wrapper_pass = getAnalysis<DominatorTreeWrapperPass>(*m_func);
 	auto &dom_tree = dom_tree_wrapper_pass.getDomTree();
 	PostDominatorTree &postdom_tree = getAnalysis<PostDominatorTree>();
 
-	for (Function::iterator bi = func->begin(); bi != func->end(); bi++) {
+	for (Function::iterator bi = m_func->begin(); bi != m_func->end(); bi++) {
 		BasicBlock *BB = bi;
 
 		DomTreeNode *idom_node = dom_tree.getNode(BB)->getIDom();

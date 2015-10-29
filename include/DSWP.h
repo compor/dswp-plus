@@ -81,7 +81,7 @@ class DSWP: public LoopPass {
 private:
 	//neccesary information
 	Module *m_module;
-	Function *func;
+	Function *m_func;
 	BasicBlock *header;
 	BasicBlock *predecessor;
 	BasicBlock *exit;

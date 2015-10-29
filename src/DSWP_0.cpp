@@ -117,8 +117,8 @@ bool DSWP::initialize(Loop *L) {
 	// loop-level initialization. shouldn't do this in doInitialize because
 	// it's not necessarily called immediately before runOnLoop....
 	header = L->getHeader();
-	func = header->getParent();
-	m_module = func->getParent();
+	m_func = header->getParent();
+	m_module = m_func->getParent();
 	context = &m_module->getContext();
 	eleType = Type::getInt64Ty(*context);
 
