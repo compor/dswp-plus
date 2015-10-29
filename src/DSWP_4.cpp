@@ -417,8 +417,14 @@ void DSWP::loopSplit(Loop *L) {
 			vector<Value *> gep_args;
 			gep_args.push_back(ConstantInt::get(Type::getInt64Ty(*context), 0));
 			gep_args.push_back(ConstantInt::get(Type::getInt32Ty(*context), j));
+			//
+			castArgs->dump();
+			cast<PointerType>(castArgs->getType()->getScalarType())->getElementType()->dump();
+			cast<PointerType>(castArgs->getType()->getScalarType())->dump();
+			castArgs->getType()->getScalarType()->dump();
+			//
 			GetElementPtrInst* ele_addr = GetElementPtrInst::Create(
-				castArgs->getType(), castArgs, gep_args, livein[j]->getName() + "_arg", newToHeader);
+				nullptr, castArgs, gep_args, livein[j]->getName() + "_arg", newToHeader);
 
 			// load it
 			LoadInst *ele_val = new LoadInst(ele_addr);
