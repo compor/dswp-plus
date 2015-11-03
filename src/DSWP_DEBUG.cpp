@@ -3,95 +3,100 @@
 using namespace llvm;
 using namespace std;
 
-void DSWP::showGraph(const Loop * const L) {
-	cout << "header:" << L->getHeader()->getName().str() << endl;
-	cout << "exit:" << L->getExitBlock()->getName().str() << endl;	//TODO check different functions related to exit
-	cout << "num of blocks:" << L->getBlocks().size() << endl;
+void DSWP::showGraph(const Loop *const L) {
+  cout << "header:" << L->getHeader()->getName().str() << endl;
+  cout << "exit:" << L->getExitBlock()->getName().str()
+       << endl; // TODO check different functions related to exit
+  cout << "num of blocks:" << L->getBlocks().size() << endl;
 
-	const std::string &name = m_module->getName().str() + "-showgraph.txt";
-	ofstream file((name.c_str()));
-	raw_os_ostream ost(file);
+  const std::string &name = m_module->getName().str() + "-showgraph.txt";
+  ofstream file((name.c_str()));
+  raw_os_ostream ost(file);
 
-	for (Loop::block_iterator bi = L->getBlocks().begin(); bi != L->getBlocks().end(); bi++) {
-		BasicBlock *BB = *bi;
-		for (BasicBlock::iterator ui = BB->begin(); ui != BB->end(); ui++) {
-			Instruction *inst = &(*ui);
-			const vector<Edge> &edges = pdg[inst];
+  for (Loop::block_iterator bi = L->getBlocks().begin();
+       bi != L->getBlocks().end(); bi++) {
+    BasicBlock *BB = *bi;
+    for (BasicBlock::iterator ui = BB->begin(); ui != BB->end(); ui++) {
+      Instruction *inst = &(*ui);
+      const vector<Edge> &edges = pdg[inst];
 
-			ost << dname[inst] << " " << *inst << ":\n";
-			ost << "\t";
-			for (vector<Edge>::const_iterator ei = edges.begin(); ei != edges.end(); ei ++) {
-				ost << dname[(ei->v)] << "[" << ei->dtype << "]\t";
-			}
-			ost << "\n\n";
-		}
-	}
+      ost << dname[inst] << " " << *inst << ":\n";
+      ost << "\t";
+      for (vector<Edge>::const_iterator ei = edges.begin(); ei != edges.end();
+           ei++) {
+        ost << dname[(ei->v)] << "[" << ei->dtype << "]\t";
+      }
+      ost << "\n\n";
+    }
+  }
 }
 
 void DSWP::showDAG(Loop *L) {
-	const std::string &name = m_module->getName().str() + "-dag.txt";
-	ofstream file((name.c_str()));
-	raw_os_ostream ost(file);
+  const std::string &name = m_module->getName().str() + "-dag.txt";
+  ofstream file((name.c_str()));
+  raw_os_ostream ost(file);
 
-	ost << "num:" << sccNum << "\n";
+  ost << "num:" << sccNum << "\n";
 
-	for (int i = 0; i < sccNum; i++) {
+  for (int i = 0; i < sccNum; i++) {
 
-		ost << "SCC " << i << ":";
+    ost << "SCC " << i << ":";
 
-		vector<Instruction *> insts = this->InstInSCC[i];
-		for (vector<Instruction *>::iterator ii = insts.begin(); ii != insts.end(); ii++) {
-			Instruction *inst = *ii;
-			ost << dname[inst] << " ";
-		}
-		ost << "\n";
+    vector<Instruction *> insts = this->InstInSCC[i];
+    for (vector<Instruction *>::iterator ii = insts.begin(); ii != insts.end();
+         ii++) {
+      Instruction *inst = *ii;
+      ost << dname[inst] << " ";
+    }
+    ost << "\n";
 
-		ost << "\tdependent scc" << ":";
-		const vector<int> &edges = this->scc_dependents[i];
-		for (unsigned i = 0; i < edges.size(); i++) {
-			ost << edges.at(i) << " ";
-		}
-		ost << "\n";
-	}
+    ost << "\tdependent scc"
+        << ":";
+    const vector<int> &edges = this->scc_dependents[i];
+    for (unsigned i = 0; i < edges.size(); i++) {
+      ost << edges.at(i) << " ";
+    }
+    ost << "\n";
+  }
 }
 
 void DSWP::showPartition(Loop *L) {
-	const std::string &name = m_module->getName().str() + "-partition.txt";
-	ofstream file((name.c_str()));
-	raw_os_ostream ost(file);
+  const std::string &name = m_module->getName().str() + "-partition.txt";
+  ofstream file((name.c_str()));
+  raw_os_ostream ost(file);
 
-	ost << "latency: \n";
-	for (int i = 0; i < sccNum; i++) {
-		ost << i << " " << sccLatency[i] << "\n";
-	}
+  ost << "latency: \n";
+  for (int i = 0; i < sccNum; i++) {
+    ost << i << " " << sccLatency[i] << "\n";
+  }
 
-	for (int i = 0; i < MAX_THREAD; i++) {
-		ost << "partition " << i << ":" << "\n";
-		vector<int> &nodes = part[i];
+  for (int i = 0; i < MAX_THREAD; i++) {
+    ost << "partition " << i << ":"
+        << "\n";
+    vector<int> &nodes = part[i];
 
-		ost << "\t";
-		for(unsigned j = 0; j < nodes.size(); j++) {
-			ost << nodes[j] << " ";
-		}
-		ost << "\n";
-	}
+    ost << "\t";
+    for (unsigned j = 0; j < nodes.size(); j++) {
+      ost << nodes[j] << " ";
+    }
+    ost << "\n";
+  }
 }
 
 void DSWP::showLiveInfo(Loop *L) {
-	cout << "live variable information" << endl;
+  cout << "live variable information" << endl;
 
-	cout << "livein:   ";
-	for (int i = 0; i < livein.size(); i++) {
-		Value *val = livein[i];
-		cout << val->getName().str() << "\t";
-	}
-	cout << endl;
+  cout << "livein:   ";
+  for (int i = 0; i < livein.size(); i++) {
+    Value *val = livein[i];
+    cout << val->getName().str() << "\t";
+  }
+  cout << endl;
 
-	cout << "liveout:  ";
-	for (int i = 0; i < liveout.size(); i++) {
-		Value *val = liveout[i];
-		cout << val->getName().str() << "\t";
-	}
-	cout << endl;
+  cout << "liveout:  ";
+  for (int i = 0; i < liveout.size(); i++) {
+    Value *val = liveout[i];
+    cout << val->getName().str() << "\t";
+  }
+  cout << endl;
 }
-
