@@ -9,6 +9,9 @@
 *.bc.ll.pdf
 *.out
 
+.ycm_extra_conf.py*
+build
+tags
 dag
 partition
 showgraph
