@@ -10,7 +10,7 @@
 *.out
 
 .ycm_extra_conf.py*
-build
+build*
 tags
 dag
 partition
